@@ -87,14 +87,9 @@ async function run(context, plugins) {
     try {
       await verifyAuth(options.repositoryUrl, context.branch.name, { cwd, env });
     } catch (error) {
-      if (!(await isBranchUpToDate(options.repositoryUrl, context.branch.name, { cwd, env }))) {
-        logger.log(
-          `The local branch ${context.branch.name} is behind the remote one, therefore a new version won't be published.`
-        );
-        return false;
+      if ((await isBranchUpToDate(options.repositoryUrl, context.branch.name, { cwd, env }))) {
+        throw error;
       }
-
-      throw error;
     }
   } catch (error) {
     logger.error(`The command "${error.command}" failed with the error message ${error.stderr}.`);
